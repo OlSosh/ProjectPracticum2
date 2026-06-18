@@ -38,7 +38,7 @@ public class WinCanvas : MonoBehaviour
 			donenessText.text = "Слабо прожареный";
 		} else if (doneness == 2)
 		{
-			donenessText.text = "Сырой";
+			donenessText.text = "Идеальная прожарка";
 		} else if (doneness == 3)
 		{
 			donenessText.text = "Подгорел";

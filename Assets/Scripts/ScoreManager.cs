@@ -78,9 +78,13 @@ public class ScoreManager : MonoBehaviour
         kebabManager.SetDonenessLevel(GetDoneness());
 	}
 
+    public float GetIterationTime()
+	{
+		return gameManager.audioSource.clip.length / iterationAmount;
+	}
     public float GetNextIterationTime()
 	{
-        float iterationTime = gameManager.audioSource.clip.length / iterationAmount;
+        float iterationTime = GetIterationTime();
         float nextTime = Mathf.Min((iterationsDone + 1) * iterationTime, gameManager.audioSource.clip.length);
 		return nextTime;
 	}
@@ -89,18 +93,22 @@ public class ScoreManager : MonoBehaviour
         return GetNextIterationTime() - gameManager.audioSource.time;
 	}
 
+    public float getNormalizedTotalGrillingScore()
+	{
+        if (iterationsDone == 0) {return 0.0f;}
+		return totalGrillingScore / iterationsDone;
+	}
     public int GetDoneness()
 	{
-		float normalizedScore = totalGrillingScore / iterationsDone + (totalGrillingScore / iterationsDone + 1.0f) / iterationsDone;
+		float normalizedScore = getNormalizedTotalGrillingScore();
+        //float transformedScore = normalizedScore + (normalizedScore + 1.0f) / iterationsDone;
         float score = -1 + (normalizedScore + 1.0f) * iterationsDone / iterationAmount;
-        int i = Mathf.FloorToInt((score + 1) * 2);
+        int i = Mathf.RoundToInt((score + 1) * 2);
         return Mathf.Clamp(i,0,4);
 	}
 
     void Update()
     {
-
-
         if (iterationAmount == iterationsDone && gameManager.playing)
 		{
 			gameManager.StopPlaying();
@@ -117,7 +125,7 @@ public class ScoreManager : MonoBehaviour
         totalIterationScore += currentIterationScore * Time.deltaTime * grillingScoreMult;
         totalIterationScore = Mathf.Max(totalIterationScore, -1.0f);
 
-        if (GetIterationTimeLeft() <= 0.0f) {
+        if (GetIterationTimeLeft() <= 0.0f  || gameManager.audioSource.time == 0.0f) {
 			flipButton.PressButton();
 		}
 
